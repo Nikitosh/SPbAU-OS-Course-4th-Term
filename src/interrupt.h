@@ -16,6 +16,8 @@
 #define SLAVE_LINE_NUMBER 2
 #define CONTROLLER_MODE 1
 
+#define FULL_MASK (bit(8) - 1)
+
 #define SIZE 256
 
 #define SEGMENT_PRESENT_FLAG bit(7)
@@ -54,6 +56,7 @@ void init_interrupt_controller();
 void init_idt();
 
 void empty_handler_w();
+void pop_handler_w();
 
 void set_interrupt_descriptor(uint8_t id, uint64_t offset, uint8_t flags); 
 

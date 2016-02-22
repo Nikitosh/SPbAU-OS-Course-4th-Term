@@ -1,8 +1,12 @@
     .code64
-	.global empty_handler_w, pit_handler_w
+	.global empty_handler_w, pit_handler_w, pop_handler_w
 	.extern pit_handler
         
 empty_handler_w:
+	iretq
+
+pop_handler_w:
+	add $8, %rsp
 	iretq
 
 pit_handler_w:

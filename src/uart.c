@@ -4,6 +4,7 @@
 void init_uart()
 {
 	out8(LINE_CONTROL_REGISTER, EIGHT_BIT_MODE);
+	out8(INTERRUPT_ENABLE_REGISTER, INTERRUPTS_DISABLED);
 }
 
 void putc(char c)

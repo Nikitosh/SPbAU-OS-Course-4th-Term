@@ -5,9 +5,11 @@
 #include "ioport.h"
 
 #define TRANSMITTER_HOLDING_BUFFER 0x3f8 + 0
+#define INTERRUPT_ENABLE_REGISTER 0x3f8 + 1
 #define LINE_CONTROL_REGISTER 0x3f8 + 3
 #define LINE_STATUS_REGISTER 0x3f8 + 5
 
+#define INTERRUPTS_DISABLED 0
 #define EIGHT_BIT_MODE (bit(0) + bit(1))
 #define CAN_WRITE_BIT 5
 

@@ -14,6 +14,9 @@ void init_interrupt_controller()
 	out8(SLAVE_DATA_REGISTER, SLAVE_START_NUMBER);
 	out8(SLAVE_DATA_REGISTER, SLAVE_LINE_NUMBER);
 	out8(SLAVE_DATA_REGISTER, CONTROLLER_MODE);
+
+	out8(MASTER_DATA_REGISTER, FULL_MASK ^ bit(0));
+	out8(SLAVE_DATA_REGISTER, FULL_MASK);
 }
 
 void init_idt()
@@ -22,7 +25,10 @@ void init_idt()
 	idt.size = sizeof(descriptors) - 1;
 	for (int i = 0; i < SIZE; i++)
 		set_interrupt_descriptor(i, (uint64_t) &empty_handler_w, SEGMENT_PRESENT_FLAG | INTERRUPT_TYPE);
-    set_idt(&idt);
+	uint8_t error_interrupt_numbers[] = {8, 10, 11, 12, 13, 14, 17, 30};
+	for (int i = 0; i < 8; i++)
+		set_interrupt_descriptor(error_interrupt_numbers[i], (uint64_t) &pop_handler_w, SEGMENT_PRESENT_FLAG | INTERRUPT_TYPE);	
+	set_idt(&idt);
 }
 
 void set_interrupt_descriptor(uint8_t id, uint64_t offset, uint8_t flags)
