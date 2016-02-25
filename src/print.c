@@ -16,9 +16,9 @@ size_t strlen(const char *s)
 
 void print_symb(char **buf, char c, size_t *print_length, size_t n)
 {
+	(*print_length)++;
 	if ((*buf) != NULL && *print_length == n)
 		return;
-	(*print_length)++;
 	if (*buf == NULL)
  		putc(c);
  	else
@@ -101,8 +101,6 @@ int vsnprintf(char *s, size_t n, const char *format, va_list args)
 	size_t len = strlen(format);
 	while (it < len)
 	{
-		if (s != NULL && print_length == n)
-			break;
 	 	if (format[it] == '%')
 	 	{
 	 		it++;
@@ -207,4 +205,8 @@ void print_test()
 {
 	int k = 105;
 	printf("%d aba %i %u %o %x %c %s %p %lld %hd\n", 105, 205, -342, 10, 123123, 98344, "kkookk", &k, (1ll << 62), (1ll << 31));
+ 	char buffer[12];
+ 	int l = snprintf(buffer, 10, "%d %d %d %d\n", 1456, 1235, 1235, 2);
+	printf("%d\n", l);
 }
+
