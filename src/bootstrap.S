@@ -113,25 +113,30 @@ setup_identity_mapping:
 	addl $4, %esp
 
 	movl $bss_phys_begin, %edx
-	movl $(bss_phys_begin + PAGE_SIZE), %eax
+	movl $(bss_phys_begin + SMALL_PAGE_SIZE), %eax
 	orl $(PTE_PRESENT | PTE_WRITE), %eax
 
 	movl %eax, (%edx)
 	movl %eax, 2048(%edx)
 	movl %eax, 4088(%edx)
 
-	addl $PAGE_SIZE, %edx
-	addl $PAGE_SIZE, %eax
+	addl $SMALL_PAGE_SIZE, %edx
+	addl $SMALL_PAGE_SIZE, %eax
 	movl %eax, (%edx)
 	movl %eax, 4080(%edx)
 
-	addl $PAGE_SIZE, %eax
+	addl $SMALL_PAGE_SIZE, %eax
 	movl %eax, 8(%edx)
 	movl %eax, 4088(%edx)
 
-	addl $PAGE_SIZE, %edx
+	addl $SMALL_PAGE_SIZE, %eax
+	movl %eax, 16(%edx);
+	addl $SMALL_PAGE_SIZE, %eax
+	movl %eax, 24(%edx);
+
+	addl $SMALL_PAGE_SIZE, %edx
 	movl $(PTE_LARGE | PTE_PRESENT | PTE_WRITE), %eax
-	movl $1024, %ecx
+	movl $2048, %ecx
 1:
 	movl %eax, (%edx)
 	addl $0x200000, %eax

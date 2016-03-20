@@ -2,6 +2,7 @@
 #include "ioport.h"
 #include "memory.h"
 #include "uart.h"
+#include "utilities.h"
 
 void init_interrupt_controller()
 {

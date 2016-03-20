@@ -3,10 +3,6 @@
 
 #include <stdint.h>
 
-#define bit(x) (1ll << (x))
-#define get_bits(x, l, r) (((x) >> (l)) & (bit((r) - (l)) - 1)) //[l, r)
-#define get_bit(x, b) get_bits(x, b, (b) + 1)
-
 static inline void out8(unsigned short port, uint8_t data)
 { __asm__ volatile("outb %0, %1" : : "a"(data), "d"(port)); }
 

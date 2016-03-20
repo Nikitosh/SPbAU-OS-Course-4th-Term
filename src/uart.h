@@ -2,6 +2,7 @@
 #define __UART_H__
 
 #include <stdint.h>
+#include "utilities.h"
 #include "ioport.h"
 
 #define TRANSMITTER_HOLDING_BUFFER 0x3f8 + 0

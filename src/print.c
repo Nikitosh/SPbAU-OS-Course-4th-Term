@@ -59,7 +59,7 @@ void print_sign_and_null(char **buf, long long *x, size_t *print_length, size_t 
 		print_symb(buf, '0', print_length, n);
 }
                       
-void print_dec_unsigned(char **buf, unsigned long long x, size_t *print_length, size_t n)
+void print_dec_unsigned(char **buf, unsigned long long x, size_t *print_length, int base, size_t need_length, size_t n)
 {
     char buffer[MAXN];
 	int pos = 0;
@@ -67,9 +67,15 @@ void print_dec_unsigned(char **buf, unsigned long long x, size_t *print_length, 
 		print_symb(buf, '0', print_length, n);
 	while (x > 0)
 	{
-		buffer[pos++] = '0' + x % 10;
-		x /= 10;
+		int digit = x % base;
+		if (digit < 10)
+        	buffer[pos++] = '0' + digit;
+        else
+        	buffer[pos++] = 'a' + digit - 10;
+		x /= base;
 	}
+	while (pos < (int) need_length)
+		buffer[pos++] = '0';
 	for (int i = pos - 1; i >= 0; i--)
 		print_symb(buf, buffer[i], print_length, n);
 } 
@@ -154,15 +160,20 @@ int vsnprintf(char *s, size_t n, const char *format, va_list args)
 	 			it++;
 	 			was = 1;
 	 			uint64_t p = (uint64_t) va_arg(args, void*);
-	 			print_number(&s, p, &print_length, 16, 16, n);
+	 			print_dec_unsigned(&s, p, &print_length, 16, 16, n);
 	 			continue;
 	 		}
 	 		if (format[it] == 'u')
 	 		{
 	 			it++;
-	 			was = 1;
-	 			unsigned int p = va_arg(args, unsigned int);
-	 			print_dec_unsigned(&s, p, &print_length, n);
+	 			if (was)
+	 				print_dec_unsigned(&s, x, &print_length, 10, 0, n);
+	 			else
+	 			{
+	 				was = 1;
+		 			unsigned int p = va_arg(args, unsigned int);
+		 			print_dec_unsigned(&s, p, &print_length, 10, 0, n);		
+	 			}
 	 			continue;
 	 		}
 	 		if (!was)

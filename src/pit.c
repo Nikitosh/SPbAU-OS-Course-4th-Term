@@ -2,6 +2,7 @@
 #include "interrupt.h"
 #include "ioport.h"
 #include "uart.h"
+#include "utilities.h"
 
 void init_pit()
 {
