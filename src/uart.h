@@ -15,9 +15,7 @@
 #define CAN_WRITE_BIT 5
 
 void init_uart();
-
 void putc(char c);
-
 void puts(char *s);
 
 #endif /* __UART_H__ */

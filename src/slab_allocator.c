@@ -122,17 +122,23 @@ struct slab_allocator* create_slab_allocator(uint64_t size, uint64_t alignment)
 	return allocator;
 }
 
-void* create_new_slab_for_slab_allocator(struct slab_allocator *allocator)
+struct slab* create_new_slab_for_slab_allocator(struct slab_allocator *allocator)
 {
 	struct slab *sl = create_slab(allocator->size, allocator->alignment);
 	list_add(&sl->list_node, &allocator->slab_head);
+	return sl;
+}
+
+void* allocate_in_new_slab(struct slab_allocator *allocator)
+{
+	struct slab *sl = create_new_slab_for_slab_allocator(allocator);
 	return slab_allocate(sl);
 }
 
 void* slab_allocator_allocate(struct slab_allocator *allocator)
 {
     if (list_empty(&allocator->slab_head))
-		return create_new_slab_for_slab_allocator(allocator);
+		return allocate_in_new_slab(allocator);
     struct list_head *head = &allocator->slab_head;
     for (struct list_head *node = head->next; node != head; node = node->next)
 	{
@@ -140,7 +146,7 @@ void* slab_allocator_allocate(struct slab_allocator *allocator)
 		if (!list_empty(&sl->descriptor_head))
 			return slab_allocate(sl);
 	}
-    return create_new_slab_for_slab_allocator(allocator);
+    return allocate_in_new_slab(allocator);
 }
 
 void slab_allocator_free(void *address)

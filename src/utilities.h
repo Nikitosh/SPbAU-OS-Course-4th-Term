@@ -10,5 +10,6 @@
 #define min(a, b) ((a) < (b) ? (a) : (b))
 
 void* align(void* pointer, uint64_t alignment);
+uint64_t div_up(uint64_t a, uint64_t b);
 
 #endif /* __UTILITIES_H__ */

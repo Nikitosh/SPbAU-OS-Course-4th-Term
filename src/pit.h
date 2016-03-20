@@ -10,9 +10,7 @@
 #define FREQUENCY_DIVIDER (bit(16) - 1)
 
 void init_pit();
-
 void pit_handler_w();
-
 void pit_handler();
 
 #endif /* __PIT_H__ */
