@@ -39,10 +39,9 @@ struct thread* thread_create(void *(*function_ptr) (void *), void *arg)
     *(--stack_pointer) = (uint64_t) &function_wrapper;
     
     uint64_t rflags;
-    __asm__ (
-    "pushfq;" 
-    "pop %%rax;" 
-    "mov %%rax, %0" :  :"m" (rflags) 
+    __asm__(
+    "pushfq;"
+    "pop %0" : "=r"(rflags)
     );
     uint8_t status_bit_numbers[] = {0, 2, 4, 6, 7, 11};
     for (int i = 0; i < 6; i++)

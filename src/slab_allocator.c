@@ -120,7 +120,7 @@ void slab_free(struct slab *sl, void *address)
 
 struct slab_allocator* create_slab_allocator(uint64_t size, uint64_t alignment)
 {
-    struct slab_allocator *allocator = (struct slab_allocator*) slab_allocator_allocate_no_lock(&slab_allocator_struct_allocator);
+    struct slab_allocator *allocator = (struct slab_allocator*) slab_allocator_allocate(&slab_allocator_struct_allocator);
     allocator->size = size;
     allocator->alignment = alignment;
     list_init(&allocator->slab_head);
