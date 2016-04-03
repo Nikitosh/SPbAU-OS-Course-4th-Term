@@ -12,9 +12,9 @@
 
 struct memory_map_descriptor
 {
-	uint64_t base_addr;
-	uint64_t length;
-	uint32_t type;
+    uint64_t base_addr;
+    uint64_t length;
+    uint32_t type;
 } __attribute__((packed));
 
 extern struct memory_map_descriptor memory_map_descriptors[MEMORY_MAP_SIZE];

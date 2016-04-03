@@ -7,24 +7,24 @@ VIRTUAL_BASE = 0xffffffff80000000;
 
 SECTIONS
 {
-	. = 1M + SIZEOF_HEADERS;
+    . = 1M + SIZEOF_HEADERS;
 
-	text_phys_begin = .;
-	.bootstrap : { *(.bootstrap) }
+    text_phys_begin = .;
+    .bootstrap : { *(.bootstrap) }
 
-	. += VIRTUAL_BASE;
-	.text : AT(ADDR(.bootstrap) + SIZEOF(.bootstrap)) { *(.text) }
+    . += VIRTUAL_BASE;
+    .text : AT(ADDR(.bootstrap) + SIZEOF(.bootstrap)) { *(.text) }
 
-	data_phys_begin = . - VIRTUAL_BASE;
-	.rodata : { *(.rodata) }
-	.data : { *(.data) }
-	data_phys_end = . - VIRTUAL_BASE;
-	. = ALIGN(PAGE_SIZE);
+    data_phys_begin = . - VIRTUAL_BASE;
+    .rodata : { *(.rodata) }
+    .data : { *(.data) }
+    data_phys_end = . - VIRTUAL_BASE;
+    . = ALIGN(PAGE_SIZE);
 
-	bss_phys_begin = . - VIRTUAL_BASE;
-	.bss : {
-		. += 6 * PAGE_SIZE;
-		*(.bss)
-	}
-	bss_phys_end = . - VIRTUAL_BASE;
+    bss_phys_begin = . - VIRTUAL_BASE;
+    .bss : {
+        . += 6 * PAGE_SIZE;
+        *(.bss)
+    }
+    bss_phys_end = . - VIRTUAL_BASE;
 }

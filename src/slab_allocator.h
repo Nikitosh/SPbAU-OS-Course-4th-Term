@@ -10,17 +10,17 @@
 
 struct slab
 {
-	struct list_head list_node;
-	struct list_head descriptor_head;
-	void *address;
-	uint32_t is_small;
+    struct list_head list_node;
+    struct list_head descriptor_head;
+    void *address;
+    uint32_t is_small;
 };
 
 struct slab_allocator
 {
-	struct list_head slab_head;
-	uint64_t size;
-	uint64_t alignment;
+    struct list_head slab_head;
+    uint64_t size;
+    uint64_t alignment;
 };
 
 void init_slab_allocator();

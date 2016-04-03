@@ -5,15 +5,15 @@
 #include <stdint.h>
 
 #define CONTAINER_OF(ptr, type, member) \
-	(type *)( (char *)(ptr) - offsetof(type, member) )
+    (type *)( (char *)(ptr) - offsetof(type, member) )
 
-#define MIN_CONST(l, r)		((l) < (r) ? (l) : (r))
-#define MAX_CONST(l, r)		((l) > (r) ? (l) : (r))
-#define BIT_CONST(b)		((uintmax_t)1 << (b))
-#define BIT(b)			BIT_CONST(b)
-#define ALL_BITS		(~((uintmax_t)0))
-#define BITS_CONST(hi, lo)	((BIT_CONST((hi) + 1) - 1) & (ALL_BITS << (lo)))
-#define BITS(hi, lo)		BITS_CONST(hi, lo)
+#define MIN_CONST(l, r)     ((l) < (r) ? (l) : (r))
+#define MAX_CONST(l, r)     ((l) > (r) ? (l) : (r))
+#define BIT_CONST(b)        ((uintmax_t)1 << (b))
+#define BIT(b)          BIT_CONST(b)
+#define ALL_BITS        (~((uintmax_t)0))
+#define BITS_CONST(hi, lo)  ((BIT_CONST((hi) + 1) - 1) & (ALL_BITS << (lo)))
+#define BITS(hi, lo)        BITS_CONST(hi, lo)
 
 
 static inline intmax_t MIN(intmax_t l, intmax_t r)

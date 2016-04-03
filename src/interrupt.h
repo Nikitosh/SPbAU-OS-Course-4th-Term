@@ -27,19 +27,19 @@
 
 struct idt_ptr 
 {
-	uint16_t size;
-	uint64_t base;
+    uint16_t size;
+    uint64_t base;
 } __attribute__((packed));
 
 struct interrupt_descriptor
 {
-	uint16_t offset_least;
-	uint16_t segment_selector;
-	uint8_t interrupt_stack_table;
-	uint8_t flags;
-	uint16_t offset_medium;
-	uint32_t offset_most;
-	uint32_t reserved;
+    uint16_t offset_least;
+    uint16_t segment_selector;
+    uint8_t interrupt_stack_table;
+    uint8_t flags;
+    uint16_t offset_medium;
+    uint32_t offset_most;
+    uint32_t reserved;
 } __attribute__((packed));
 
 static struct interrupt_descriptor descriptors[SIZE];

@@ -5,8 +5,8 @@
 
 struct spinlock
 {
-	uint16_t users;
-	uint16_t ticket;
+    uint16_t users;
+    uint16_t ticket;
 };
 
 void init_lock(struct spinlock *lock);

@@ -13,21 +13,21 @@
 
 void main(void)
 { 
-	init_uart();
-	init_interrupt_controller();
-	init_idt();
+    init_uart();
+    init_interrupt_controller();
+    init_idt();
     
-	get_memory_map();
-	init_buddy();
-	init_paging();
-	init_slab_allocator();
-	
-	init_pit();	
+    get_memory_map();
+    init_buddy();
+    init_paging();
+    init_slab_allocator();
+    
+    init_pit(); 
     init_threads();
-	
-	sti();
-	
-	test_all();
-	
-	while (1);
+    
+    sti();
+    
+    test_all();
+    
+    while (1);
 }

@@ -10,18 +10,18 @@
 
 typedef enum 
 {
-	RUNNING, 
-	FINISHED,
-	RELEASED
+    RUNNING, 
+    FINISHED,
+    RELEASED
 } thread_state;
 
 struct thread
 {
-	thread_state state;
-	void *page_address;
-	void *stack_pointer;
-	void *return_value;
-	struct list_head list_node;
+    thread_state state;
+    void *page_address;
+    void *stack_pointer;
+    void *return_value;
+    struct list_head list_node;
 };
 
 void init_threads();
