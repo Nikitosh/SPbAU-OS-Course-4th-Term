@@ -7,7 +7,8 @@
 #define RATE_GENERATOR (1 << 2)
 #define DATA_FLAG ((1 << 4) | (1 << 5))
 
-#define FREQUENCY_DIVIDER (bit(16) - 1)
+#define FREQUENCY_DIVIDER (bit(12))
+#define FREQUENCY 1193180
 
 void init_pit();
 void pit_handler_w();

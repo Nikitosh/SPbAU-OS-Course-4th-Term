@@ -7,10 +7,13 @@
 #include "paging.h"
 #include "bootstrap_allocator.h"
 #include "utilities.h"
-
+#include "lock.h"
+                
 struct list_head *level_head;
 int level_number;
 int descriptors_size;
+
+static struct spinlock buddy_allocator_lock;
 
 struct buddy_allocator_descriptor
 {
@@ -29,6 +32,7 @@ int get_buddy(int id, int level)
 
 void* allocate_page(int level)
 {
+ 	lock(&buddy_allocator_lock);
  	for (int current_up_level = level; current_up_level < level_number; current_up_level++)
  	{
  	 	if (level_head[current_up_level].next != &level_head[current_up_level])
@@ -44,10 +48,11 @@ void* allocate_page(int level)
  	 	   	} 
  	 	   	descriptors[id].is_free = 0;
  	 	   	descriptors[id].level = level;
+ 			unlock(&buddy_allocator_lock);
  	 	   	return va(id * (uint64_t) SMALL_PAGE_SIZE);
- 	 		break;
  	 	}
  	}
+ 	unlock(&buddy_allocator_lock);
  	return 0;
 }	
 
@@ -61,6 +66,7 @@ void* allocate_empty_page(int level)
 
 void free_page(void *address, int level)
 {
+	lock(&buddy_allocator_lock);
 	int id = pa(address) / SMALL_PAGE_SIZE;
 	for (int current_level = level; current_level < level_number; current_level++)
 	{
@@ -78,6 +84,7 @@ void free_page(void *address, int level)
 			id = min(id, buddy_id);
 		}
 	}
+	unlock(&buddy_allocator_lock);
 }
 
 void add_page(int id)
@@ -101,13 +108,13 @@ void init_buddy()
 	descriptors = (struct buddy_allocator_descriptor*) (uint64_t*) bootstrap_allocate(descriptors_memory);
    	for (int i = 0; i < level_number; i++)
 		list_init(&level_head[i]);
-   	for (int i = 0; i < descriptors_size; i++)
+	for (int i = 0; i < descriptors_size; i++)
    	{
    		descriptors[i].is_free = 0;
    		list_init(&descriptors[i].list_node);
    	}
-   	uint32_t memory_map_size = get_memory_map_size();
-   	for (int i = 0; i < (int) memory_map_size; i++)
+	uint32_t memory_map_size = get_memory_map_size();
+	for (int i = 0; i < (int) memory_map_size; i++)
 		if (memory_map_descriptors[i].type == AVAILABLE)
 		{
 		 	uint64_t left_bound = memory_map_descriptors[i].base_addr;
@@ -119,6 +126,7 @@ void init_buddy()
 				add_page(left_bound / SMALL_PAGE_SIZE);
 			}
 		}
+	init_lock(&buddy_allocator_lock);
 }
 
 void set_slab(void *address, struct slab *sl)

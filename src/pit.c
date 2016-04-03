@@ -3,6 +3,7 @@
 #include "ioport.h"
 #include "uart.h"
 #include "utilities.h"
+#include "threads.h"
 
 void init_pit()
 {
@@ -14,6 +15,6 @@ void init_pit()
 
 void pit_handler()
 {
-	puts("TICK\n");
 	send_eoi(1);
+	thread_schedule((double) FREQUENCY_DIVIDER / FREQUENCY);
 }

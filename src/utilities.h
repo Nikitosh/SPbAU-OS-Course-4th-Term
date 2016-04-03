@@ -9,6 +9,11 @@
 #define max(a, b) ((a) > (b) ? (a) : (b))
 #define min(a, b) ((a) < (b) ? (a) : (b))
 
+#define barrier() __asm__ __volatile__("": : :"memory")
+#define smp_mb() __sync_synchronize()
+
+void srand(unsigned int seed);
+int rand();
 void* align(void* pointer, uint64_t alignment);
 uint64_t div_up(uint64_t a, uint64_t b);
 

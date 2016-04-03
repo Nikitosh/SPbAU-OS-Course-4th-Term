@@ -51,6 +51,9 @@ static inline void set_idt(const struct idt_ptr *ptr)
 static inline void sti()
 { __asm__ volatile ("sti"); }
 
+static inline void cli()
+{ __asm__ volatile ("cli"); }
+
 void init_interrupt_controller();
 
 void init_idt();

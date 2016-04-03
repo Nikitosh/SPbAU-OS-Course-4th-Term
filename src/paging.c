@@ -3,7 +3,7 @@
 #include "memory.h"
 #include "bootstrap_allocator.h"
 #include "memory_map.h"
-#include "utilities.h"
+#include "utilities.h"     
 
 void init_entry(pte_t *entry, uint32_t flags)
 {
@@ -39,7 +39,7 @@ void init_kernel_mapping(pte_t *pml4)
 void init_paging()
 {
 	bootstrap_init((div_up(KERNEL_SIZE, BIG_PAGE_SIZE) + div_up(get_memory_size(), BIG_PAGE_SIZE)) * SMALL_PAGE_SIZE * 2);
-	pte_t *pml4 = (pte_t*) bootstrap_allocate_with_alignment(SMALL_PAGE_SIZE, SMALL_PAGE_SIZE);
+	pte_t *pml4 = (pte_t*) va(load_pml4());
 	init_after_canonical_hole_mapping(pml4);
 	init_kernel_mapping(pml4);
 	store_pml4(pa(pml4));
