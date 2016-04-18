@@ -1,18 +1,9 @@
 #include "print.h"
+
 #include "uart.h"
+#include "string.h"
 
-#define MAXN 70
-
-size_t strlen(const char *s)
-{
-    size_t len = 0;
-    while (*s)
-    {
-        len++;
-        s++;
-    }
-    return len;
-}
+#define MAX_LENGTH 70
 
 void print_symb(char **buf, char c, size_t *print_length, size_t n)
 {
@@ -61,7 +52,7 @@ void print_sign_and_null(char **buf, long long *x, size_t *print_length, size_t 
                       
 void print_dec_unsigned(char **buf, unsigned long long x, size_t *print_length, int base, size_t need_length, size_t n)
 {
-    char buffer[MAXN];
+    char buffer[MAX_LENGTH];
     int pos = 0;
     if (x == 0)
         print_symb(buf, '0', print_length, n);
@@ -82,7 +73,7 @@ void print_dec_unsigned(char **buf, unsigned long long x, size_t *print_length, 
 
 void print_number(char **buf, long long x, size_t *print_length, int base, size_t need_length, size_t n)
 {
-    char buffer[MAXN];
+    char buffer[MAX_LENGTH];
     int pos = 0;
     print_sign_and_null(buf, &x, print_length, n);
     while (x > 0)

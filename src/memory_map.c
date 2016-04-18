@@ -19,15 +19,46 @@ struct size_descriptor
 struct memory_map_descriptor memory_map_descriptors[MEMORY_MAP_SIZE];
 uint32_t memory_map_size = 0;
 
-void add_descriptor(uint32_t *index, uint64_t base_addr, uint64_t length, uint32_t type)
+void add_descriptor(struct memory_map_descriptor *descriptors, uint32_t *index, uint64_t base_addr, uint64_t length, uint32_t type)
 {
     if (length == 0)
         return;
-    memory_map_descriptors[*index].base_addr = base_addr;   
-    memory_map_descriptors[*index].length = length; 
-    memory_map_descriptors[*index].type = type; 
+    descriptors[*index].base_addr = base_addr;   
+    descriptors[*index].length = length; 
+    descriptors[*index].type = type; 
     (*index)++;
 }              
+
+void mark_as_reserved(uint64_t left, uint64_t right)
+{
+	struct memory_map_descriptor memory_map_descriptors_temp[MEMORY_MAP_SIZE];
+	uint32_t memory_map_size_temp = 0;
+	for (int i = 0; i < (int) memory_map_size; i++)
+	{
+		uint64_t descriptor_left = memory_map_descriptors[i].base_addr;
+		uint64_t descriptor_right = memory_map_descriptors[i].base_addr + memory_map_descriptors[i].length;
+		if (descriptor_left >= right || left >= descriptor_right)
+		{
+			memory_map_descriptors_temp[memory_map_size_temp++] = memory_map_descriptors[i];
+			continue;
+	   	}
+	   	if (left <= descriptor_left && right >= descriptor_right)
+	   		continue;
+	   	if (descriptor_left < left)
+	   	{
+	   		add_descriptor(memory_map_descriptors_temp, &memory_map_size_temp, 
+	   			descriptor_left, left - descriptor_left, memory_map_descriptors[i].type);
+	   	}
+	   	if (descriptor_right > right)
+	   	{
+	   		add_descriptor(memory_map_descriptors_temp, &memory_map_size_temp, 
+	   			right, descriptor_right - right, memory_map_descriptors[i].type);
+	   	}
+	}
+	memory_map_size = memory_map_size_temp;
+	for (int i = 0; i < (int) memory_map_size; i++)
+		memory_map_descriptors[i] = memory_map_descriptors_temp[i];
+}
 
 void get_memory_map()
 {
@@ -40,31 +71,17 @@ void get_memory_map()
     uint32_t memory_map_length = *(uint32_t*) (uintptr_t) (mboot_info + MEMORY_MAP_LENGTH_OFFSET);
     uint32_t memory_map_addr = *(uint32_t*) (uintptr_t) (mboot_info + MEMORY_MAP_ADDR_OFFSET);
     
-    uint64_t kernel_left = (uint64_t) text_phys_begin;
-    uint64_t kernel_right = (uint64_t) bss_phys_end;
-
-    for (struct size_descriptor *pair = (struct size_descriptor*) (uintptr_t) memory_map_addr; 
+	for (struct size_descriptor *pair = (struct size_descriptor*) (uintptr_t) memory_map_addr; 
         (unsigned long long) pair < memory_map_addr + memory_map_length; 
         pair = (struct size_descriptor*) (uintptr_t) ((uintptr_t) pair + pair->size + sizeof(pair->size)))
     {
         struct memory_map_descriptor *descriptor = &pair->descriptor;
-        uint64_t descriptor_left = descriptor->base_addr;
-        uint64_t descriptor_right = descriptor->base_addr + descriptor->length;
-        if (descriptor_left >= kernel_right || kernel_left >= descriptor_right)
-        {
-            add_descriptor(&memory_map_size, descriptor_left, descriptor->length, descriptor->type);
-            continue;
-        }
-        if (descriptor_left <= kernel_left && kernel_left < descriptor_right)
-        {
-            add_descriptor(&memory_map_size, descriptor_left, kernel_left - descriptor_left, descriptor->type);
-            if (kernel_right < descriptor_right)
-                add_descriptor(&memory_map_size, kernel_right, descriptor_right - kernel_right, descriptor->type);
-        }
-        if (descriptor_left >= kernel_left && descriptor_left < kernel_right && descriptor_right > kernel_right)
-            add_descriptor(&memory_map_size, kernel_right, descriptor_right - kernel_right, descriptor->type);
+        add_descriptor(memory_map_descriptors, &memory_map_size, descriptor->base_addr, descriptor->length, descriptor->type);
     }
-    add_descriptor(&memory_map_size, kernel_left, kernel_right - kernel_left, RESERVED);
+
+    uint64_t kernel_left = (uint64_t) text_phys_begin;
+    uint64_t kernel_right = (uint64_t) bss_phys_end;
+	mark_as_reserved(kernel_left, kernel_right);
 }
 
 uint32_t get_memory_map_size()
@@ -80,13 +97,13 @@ uint64_t memory_map_allocate(uint64_t size)
         if (descriptor->type == AVAILABLE && descriptor->length >= size)
         {
             descriptor->length -= size;
-            add_descriptor(&memory_map_size, descriptor->base_addr + descriptor->length, size, RESERVED);
+            add_descriptor(memory_map_descriptors, &memory_map_size, descriptor->base_addr + descriptor->length, size, RESERVED);
             return descriptor->base_addr + descriptor->length;
         }
     }
     return 0;
 }
-
+                     	
 uint64_t get_memory_size()
 {
     uint64_t memory_size = 0;

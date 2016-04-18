@@ -6,9 +6,11 @@
 #include "memory.h"
 #include "threads.h"
 #include "lock.h"
+#include "file_system.h"
 
 #define RUN_NUMBER    200
 #define THREAD_NUMBER 30
+#define LENGTH        20000
 
 void test_print()
 {
@@ -145,10 +147,38 @@ void test_threads()
     test_thread_join();
 }
 
+void test_file_system()
+{
+	mkdir("new_folder");
+	struct file_descriptor *file = open("new_folder/new_file.txt", O_CREAT | O_WRITE);
+	static char buf[LENGTH];
+	static char buf2[LENGTH];
+	for (int i = 0; i < LENGTH; i++)
+		buf[i] = 'a' + i;
+	write(file, buf, LENGTH);
+	close(file);
+	struct file_descriptor *file2 = open("new_folder/new_file.txt", O_CREAT | O_READ);
+	read(file, buf2, LENGTH);
+	close(file2);
+	int ok = 1;
+	for (int i = 0; i < LENGTH; i++)
+	{
+		if (buf[i] != buf2[i])
+		{
+			printf("file system test: failed\n");	
+			ok = 0;		
+		}
+	}
+	print_file_system();
+	if (ok)
+		printf("file system test: OK\n");
+}
+
 void test_all()
 {
     //test_print();
     //test_buddy_allocator();
     //test_slab_allocator();
-    test_threads();
+    //test_threads();
+    test_file_system();
 }

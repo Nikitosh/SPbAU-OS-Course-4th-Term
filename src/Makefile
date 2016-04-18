@@ -10,7 +10,7 @@ ASM := bootstrap.S videomem.S wrapper.S threads_wrapper.S
 AOBJ:= $(ASM:.S=.o)
 ADEP:= $(ASM:.S=.d)
 
-SRC := main.c uart.c interrupt.c pit.c print.c memory_map.c bootstrap_allocator.c buddy_allocator.c list.c paging.c slab_allocator.c utilities.c test.c lock.c threads.c
+SRC := main.c uart.c interrupt.c pit.c print.c memory_map.c bootstrap_allocator.c buddy_allocator.c list.c paging.c slab_allocator.c utilities.c string.c test.c lock.c threads.c initramfs.c file_system.c
 OBJ := $(AOBJ) $(SRC:.c=.o)
 DEP := $(ADEP) $(SRC:.c=.d)
 
@@ -31,4 +31,5 @@ kernel: $(OBJ) kernel.ld
 clean:
 	rm -f kernel $(OBJ) $(DEP)
 run:
-	qemu-system-x86_64 -kernel kernel -serial stdio
+	bash make_initramfs.sh test_dir initram.cpio
+	qemu-system-x86_64 -kernel kernel -serial stdio -initrd initram.cpio

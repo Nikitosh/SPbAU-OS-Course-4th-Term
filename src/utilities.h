@@ -16,5 +16,7 @@ void srand(unsigned int seed);
 int rand();
 void* align(void* pointer, uint64_t alignment);
 uint64_t div_up(uint64_t a, uint64_t b);
+uint32_t convert_from_hex(const char *str, int len);
+uint32_t get_size_level(uint64_t size);
 
 #endif /* __UTILITIES_H__ */

@@ -1,4 +1,5 @@
 #include "utilities.h"
+#include "memory.h"
 
 static unsigned long int next = 1;
 
@@ -28,3 +29,27 @@ uint64_t div_up(uint64_t a, uint64_t b)
     return a / b;
 }
 
+uint32_t convert_from_hex(const char *str, int len)
+{                                
+	uint32_t result = 0;
+	for (int i = 0; i < len; i++)
+	{
+		int digit = str[i] - '0';
+		if (str[i] >= 'A' && str[i] <= 'F')
+			digit = 10 + str[i] - 'A';
+		result = 16 * result + digit;
+	}
+	return result;
+}
+                
+uint32_t get_size_level(uint64_t size)
+{
+	size = div_up(size, SMALL_PAGE_SIZE);
+	uint32_t result = 0;
+	while (size > 1)
+	{
+		size = (size + 1) / 2;
+		result++;
+	}	
+	return result;
+}

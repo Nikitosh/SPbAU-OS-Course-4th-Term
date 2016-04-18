@@ -3,12 +3,12 @@
 
 #include <stdint.h>
 
-#define MEMORY_MAP_BIT 6
+#define MEMORY_MAP_BIT           6
 #define MEMORY_MAP_LENGTH_OFFSET 44
-#define MEMORY_MAP_ADDR_OFFSET 48
-#define MEMORY_MAP_SIZE 32
-#define RESERVED 0
-#define AVAILABLE 1
+#define MEMORY_MAP_ADDR_OFFSET   48
+#define MEMORY_MAP_SIZE          32
+#define RESERVED                 0
+#define AVAILABLE                1
 
 struct memory_map_descriptor
 {
@@ -20,6 +20,7 @@ struct memory_map_descriptor
 extern struct memory_map_descriptor memory_map_descriptors[MEMORY_MAP_SIZE];
 
 void get_memory_map();
+void mark_as_reserved(uint64_t left, uint64_t right);
 uint64_t memory_map_allocate(uint64_t size);
 uint32_t get_memory_map_size();
 uint64_t get_memory_size();

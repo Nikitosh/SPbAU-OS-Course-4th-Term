@@ -10,6 +10,8 @@
 #include "threads.h"
 #include "lock.h"
 #include "paging.h"
+#include "file_system.h"
+#include "initramfs.h"
 
 void main(void)
 { 
@@ -22,9 +24,12 @@ void main(void)
     init_paging();
     init_slab_allocator();
     
+    init_file_system();
+    init_initramfs();
+	print_file_system();
+	
     init_pit(); 
     init_threads();
-    
     sti();
     
     test_all();
