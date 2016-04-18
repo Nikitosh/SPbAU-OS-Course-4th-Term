@@ -43,11 +43,13 @@ void init_file_descriptor(struct file_descriptor *descriptor, struct file *file,
 }
 
 void add_to_directory(struct file *directory, struct file *file)
-{
+{	
+	lock(&directory->lock);
 	if (directory->children == NULL)
 		directory->children = &file->list_node;
 	else
 		list_add_tail(&file->list_node, directory->children);
+	unlock(&directory->lock);
 }
 
 int contains_directory(const char *path)
@@ -104,12 +106,16 @@ int resize_file(struct file *file, uint64_t size)
 	if (size > (uint64_t) SMALL_PAGE_SIZE * (1ll << (file->size_level - 1)) && size <= (uint64_t) SMALL_PAGE_SIZE * (1ll << (file->size_level)))
 	{
 		file->size = size;
+		unlock(&file->lock);
 		return 1;
    	}
    	uint32_t size_level = get_size_level(size);
    	uint8_t *data = allocate_page(size_level);
    	if (data == NULL)
-   		return 0;
+   	{
+   		unlock(&file->lock);
+		return 0;
+   	}
    	for (uint64_t i = 0; i < min(size, file->size); i++)
    		data[i] = file->data[i];
    	free_page(file->data, file->size_level);
