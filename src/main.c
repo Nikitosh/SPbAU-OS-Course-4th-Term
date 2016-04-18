@@ -20,13 +20,14 @@ void main(void)
     init_idt();
     
     get_memory_map();
+    init_initramfs();
     init_buddy();
     init_paging();
     init_slab_allocator();
     
     init_file_system();
-    init_initramfs();
-	print_file_system();
+    load_initramfs_module();
+    print_file_system();
 	
     init_pit(); 
     init_threads();

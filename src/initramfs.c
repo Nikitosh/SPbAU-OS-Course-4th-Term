@@ -1,4 +1,4 @@
-#include "initramfs.h"
+#include "initramfs.h"              
 
 #include <stdint.h>
 #include "memory_map.h"
@@ -19,10 +19,12 @@ struct module_descriptor
 	uint32_t reserved;
 };
 
-void load_module(struct module_descriptor module)
+static struct module_descriptor initramfs_module;
+
+void load_initramfs_module()
 {
-	uint8_t *address = (uint8_t*) (uint64_t) va(module.mod_start);
-	while ((uint64_t) address + sizeof(struct cpio_header) <= (uint64_t) va(module.mod_end))
+	uint8_t *address = (uint8_t*) (uint64_t) va(initramfs_module.mod_start);
+	while ((uint64_t) address + sizeof(struct cpio_header) <= (uint64_t) va(initramfs_module.mod_end))
 	{
 		address = align(address, CPIO_ALIGNMENT);
 		struct cpio_header *header = (struct cpio_header*) address;
@@ -51,22 +53,21 @@ void load_module(struct module_descriptor module)
 
 void init_initramfs()
 {
-	uint64_t mboot_info_va = (uint64_t) va(*(uint64_t*) va((uint64_t) &mboot_info));
-	uint32_t flags = *(uint64_t*) (uint64_t) (mboot_info_va + FLAGS_OFFSET);
+	uint32_t flags = *(uint64_t*) (uint64_t) (mboot_info + FLAGS_OFFSET);
 	if (!get_bit(flags, MODS_BIT))
 	{
 		printf("No available modules\n");
 		return;
 	}
 	uint32_t mods_count = *(uint64_t*) (uint64_t) (mboot_info + MODS_COUNT_OFFSET);
-	uint64_t mods_addr = (uint64_t) va(*(uint64_t*) (uint64_t) (mboot_info + MODS_ADDR_OFFSET));
+	uint64_t mods_addr = *(uint64_t*) (uint64_t) (mboot_info + MODS_ADDR_OFFSET);
 	struct module_descriptor* module_descriptor_addr = (struct module_descriptor*) (uint64_t) mods_addr;
 	for (int i = 0; i < (int) mods_count; i++) 
 	{
 		if (module_descriptor_addr[i].mod_end - module_descriptor_addr[i].mod_start >= sizeof(struct cpio_header)
-			&& strncmp(((struct cpio_header*) (uint64_t) va(module_descriptor_addr[i].mod_start))->magic, MAGIC, strlen(MAGIC)) == 0)
+			&& strncmp(((struct cpio_header*) (uint64_t) module_descriptor_addr[i].mod_start)->magic, MAGIC, strlen(MAGIC)) == 0)
 		{
-			load_module(module_descriptor_addr[i]);
+			initramfs_module = module_descriptor_addr[i];
 			mark_as_reserved(module_descriptor_addr[i].mod_start, module_descriptor_addr[i].mod_end);									
 		}	
 	}

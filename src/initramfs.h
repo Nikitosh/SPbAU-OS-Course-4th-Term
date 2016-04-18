@@ -36,5 +36,6 @@ struct cpio_header {
 } __attribute__((packed));
 
 void init_initramfs();
+void load_initramfs_module();
 
 #endif /*__INITRAMFS_H__*/
